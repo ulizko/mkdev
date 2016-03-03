@@ -8,10 +8,10 @@ begin
   #exit
 end
 
-@movies = {}
+movies = {}
 lines.each do |value|
   value = value.split("|")
-  @movies[value[1]] = { url: value[0],
+  movies[value[1]] = { url: value[0],
                        title: value[1],
                        year: value[2],
                        country: value[3],
@@ -24,31 +24,30 @@ lines.each do |value|
                       }
 end
 
-def search(str, field = :title)
-  filter = @movies.select do |key, value|
+def search(arr, field, str)
+  filtred = arr.select do |key, value|
     value[field].downcase.include? str.downcase
   end
-  filter.each_value do |value|
+  filtred.values
+end
+
+def sort_movies(arr, field, reversed = false)
+  sorted = arr.sort_by do |key, value|
+    value[field].to_f.zero? ? value[field] : value[field].to_f
+  end
+  reversed ? sorted.reverse : sorted
+end
+
+def present_rating_as_stars(arr)
+  arr.map do |value|
     rating = ((value[:rating].to_f.ceil - value[:rating].to_f)*10).to_i
-    puts "#{value[:title]} #{"".ljust(rating, "*")}"
+    value[:rating] = "".ljust(rating, "*")
   end
+  arr
 end
 
-def sort_movies(field, contant = nil, count = 0)
-  sorted = @movies.sort_by do |key, value|
-    value[field].to_i.zero? ? value[field] : value[field].to_f
-  end
-  unless count.zero?
-    sorted.reverse.first(count).each do |key, value|
-      puts "#{key}, #{field.to_s}: #{value[field]}"
-    end
-  else
-    sorted.reverse.each do |key, value|
-      puts "#{key}, #{field.to_s}: #{value[field]}"
-    end
-  end
+s = present_rating_as_stars(search(movies, :title, "Time"))
+s.each do |value|
+  puts "#{value[:title]} #{value[:rating]}"
 end
-
-
-search "God"
-sort_movies(:time)
+#puts sort_movies(movies, :country).first(5)
