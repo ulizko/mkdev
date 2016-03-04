@@ -25,14 +25,14 @@ lines.each do |value|
 end
 
 def search(arr, field, str)
-  filtred = arr.select do |key, value|
+  filtred = arr.select do |_, value|
     value[field].downcase.include? str.downcase
   end
   filtred
 end
 
 def sort_movies(arr, field, reversed = false)
-  sorted = arr.sort_by do |key, value|
+  sorted = arr.sort_by do |_, value|
     case field
     when :title, :country, :release, :genres, :starring
       value[field]
@@ -46,7 +46,7 @@ def sort_movies(arr, field, reversed = false)
 end
 
 def present_rating_as_stars(arr)
-  arr.map do |key, value|
+  arr.map do |_, value|
     rating = ((value[:rating].to_f.ceil - value[:rating].to_f)*10).to_i
     value[:rating] = "".ljust(rating, "*")
   end
@@ -59,36 +59,66 @@ def slice_movies(arr, *option)
   end
 end
 
+def count_actor(arr)
+  hash = arr.group_by{|val| val[:title]}.each{|_, v| v.map!{|m| m[:starring].split(",")}.flatten!}
+  cnt = hash.values.flatten.reduce({}) do |tmp, k|
+    tmp[k] = hash.values.flatten.count(k)
+    tmp
+  end
+  cnt.sort_by {|v, k| k}.to_h
+end
 
 
-=begin
 stars = present_rating_as_stars(search(movies, :title, "Time"))
 stars.each do |_, value|
   puts "#{value[:title]} #{value[:rating]}"
 end
+
+20.times{ print "*"}
+p 
 
 the_longest_movies = sort_movies(movies, :time, true).first(5)
 the_longest_movies.each do |_, value| 
   puts "#{value[:title]} #{value[:time]}"
 end
 
+20.times{ print "*"}
+p 
+
 comedy = sort_movies(search(movies, :genres, "Comedy"), :release)
 comedy.each do |_, value|
   puts "#{value[:title]} #{value[:release]}"
 end
+
+20.times{ print "*"}
+p 
 
 directors = sort_movies(movies, :director).uniq {|_, v| v[:director]}
 directors.each do |_, value|
   puts value[:director]
 end
 
+20.times{ print "*"}
+p 
+
 country_not_usa = movies.count {|_, v| v[:country] != "USA"}
 p country_not_usa
 
+20.times{ print "*"}
+p 
 
 group_by_directors = movies.values.group_by{|val| val[:director]}.each{|_, v| v.map!{|m| m[:title]}}
+count_movies = group_by_directors.values.reduce({}) do |tmp, k|
+    tmp[group_by_directors.key(k)] = k.size
+    tmp
+end
+count_movies.each do |k, v|
+  puts "#{k} made #{v} movies"
+end
 
-p group_by_directors
+20.times{ print "*"} 
+p 
 
-=end
-p slice_movies(movies, :title, :starring)
+count_actor(slice_movies(movies, :title, :starring)).each do |k, v|
+  puts "#{k} starred in #{v} movies"
+end
