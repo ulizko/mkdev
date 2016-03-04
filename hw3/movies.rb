@@ -8,50 +8,67 @@ begin
   #exit
 end
 
-movies = {}
+movies = []
 lines.each do |value|
   value = value.split("|")
-  movies[value[1]] = { url: value[0],
-                       title: value[1],
-                       year: value[2],
-                       country: value[3],
-                       release: value[4],
-                       genres: value[5],
-                       time: value[6],
-                       rating: value[7],
-                       director: value[8],
-                       starring: value[9]
-                      }
+  movies.push({ url: value[0],
+                title: value[1],
+                year: value[2],
+                country: value[3],
+                release: value[4],
+                genres: value[5],
+                time: value[6],
+                rating: value[7],
+                director: value[8],
+                starring: value[9]
+                })
 end
 
-def search(arr, field, str)
-  filtred = arr.select do |_, value|
-    value[field].downcase.include? str.downcase
-  end
-  filtred
+filter = movies.select {|value| value[:title].include? "Time"}
+
+filter.each do |value|
+  rating = ((value[:rating].to_f.ceil - value[:rating].to_f)*10).to_i
+  puts "#{value[:title]} #{"".ljust(rating, "*")}"
 end
 
-def sort_movies(arr, field, reversed = false)
-  sorted = arr.sort_by do |_, value|
-    case field
-    when :title, :country, :release, :genres, :starring
-      value[field]
-    when :year, :time
-      value[field].to_f
-    when :director
-      value[field].split(" ").last
-    end
-  end
-  reversed ? sorted.reverse : sorted
+puts "*" * 20
+
+the_longest_movies = movies.sort_by {|value| value[:time].to_f}.reverse!.first(5)
+the_longest_movies.each { |value| puts "#{value[:title]} #{value[:time]}"}
+
+puts "*" * 20
+
+comedy = movies.select {|value| value[:genres].include? "Comedy"}.sort_by{|value| value[:release]}
+comedy.each {|value| puts "#{value[:title]} released #{value[:release]}"}
+
+puts "*" * 20
+
+directors = movies.map {|value| value.select {|k| k == :director}}.sort_by{|v| v[:director].split(" ").last}.uniq
+directors.each {|v| puts v[:director]}
+
+puts "*" * 20
+
+movies_not_usa = movies.count {|v| v[:country] != "USA"}
+p movies_not_usa
+
+puts "*" * 20
+
+group_by_directors = movies.group_by{|val| val[:director]}
+group_by_directors.each do |k, v|
+  puts "#{k} made #{v.count} movies"
 end
 
-def present_rating_as_stars(arr)
-  arr.map do |_, value|
-    rating = ((value[:rating].to_f.ceil - value[:rating].to_f)*10).to_i
-    value[:rating] = "".ljust(rating, "*")
-  end
-  arr
+puts "*" * 20
+
+actor = movies.map {|v| v[:starring].split(",")}.flatten
+count_actor = actor.reduce({}) do |hash, k| 
+    hash[k] = actor.count(k)
+    hash
 end
+count_actor.each {|k, v| puts "#{k} starred in #{v} movies"}
+
+=begin
+
 
 def slice_movies(arr, *option)
   arr.values.map! do |v|
@@ -122,7 +139,7 @@ p
 count_actor(slice_movies(movies, :title, :starring)).each do |k, v|
   puts "#{k} starred in #{v} movies"
 end
-
+=end
 
 =begin
 1. method chaining это написание кода в одну строчку, использование разных методов последовательно в цепочке.
