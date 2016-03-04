@@ -122,3 +122,12 @@ p
 count_actor(slice_movies(movies, :title, :starring)).each do |k, v|
   puts "#{k} starred in #{v} movies"
 end
+
+
+=begin
+1. method chaining это написание кода в одну строчку, использование разных методов последовательно в цепочке.
+2. map и map! применяют переданный блок к каждому элементу массива и возвращают новый массив,
+  который содержит значения возвращаемые блоком.
+  reject и reject! возвращают новый массив со значениями для которых выполняется условие переданное в блоке.
+  map, reject используют без method chaining, а map!, reject! используют внутри цепочки method chaining
+=end
