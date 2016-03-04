@@ -5,6 +5,7 @@ begin
   lines = File.read(file_name).split("\n")
   rescue Exception
   puts "File not found: #{file_name}"
+  exit
 end
 
 movies = lines.map {|v| FIELDS.zip(v.split("|")).to_h}
