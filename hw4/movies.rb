@@ -40,7 +40,7 @@ the_longest_movies.each { |value| puts "#{value.title} #{value.time}"}
 
 puts "*" * 20
 
-comedy = movies.select {|value| value[:genres].include? "Comedy"}.sort_by{|value| value.release}
+comedy = movies.select {|value| value.genres.include? "Comedy"}.sort_by{|value| value.release}
 comedy.each {|value| puts "#{value.title} released #{value.release}"}
 
 puts "*" * 20
@@ -62,7 +62,7 @@ end
 
 puts "*" * 20
 
-actor = movies.map {|v| v[:starring].split(",")}.flatten
+actor = movies.map {|v| v.starring].split(",")}.flatten
 count_actor = actor.reduce({}) do |hash, k| 
     hash[k] = actor.count(k)
     hash
