@@ -62,7 +62,7 @@ end
 
 puts "*" * 20
 
-actor = movies.map {|v| v.starring].split(",")}.flatten
+actor = movies.map {|v| v.starring.split(",")}.flatten
 count_actor = actor.reduce({}) do |hash, k| 
     hash[k] = actor.count(k)
     hash
