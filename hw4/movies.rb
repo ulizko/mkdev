@@ -7,24 +7,20 @@ FIELDS = [:url, :title, :year, :country, :release, :genres, :time, :rating, :dir
 puts "Hello. Enter file name"
 begin
   file_name = gets.chomp
-  lines = File.read(file_name).split("\n")
   rescue Exception
   puts "File not found: #{file_name}"
   exit
 end
 
-movies_table = CSV.read(file_name, { :col_sep => '|', :headers => FIELDS}) 
-
-arr = movies_table.by_col[:release].delete_if{|s| s.size < 7}.map{|v| Date.strptime(v, '%Y-%m').mon}
-mon = arr.reduce({}) do |hash, k|
-  hash[Date::MONTHNAMES[k]] = arr.count(k)
-  hash
+movies =[]
+movies_table = CSV.read(file_name, col_sep: '|', headers: FIELDS).each do |line|
+  movies << OpenStruct.new(line.to_h)
 end
-mon.sort_by{|k, v| Date.parse(k).mon}.each{|k, v| puts "In #{k} released #{v} movies" }
+
+arr1 = movies_table.delete_if{|s| s[:release].size < 7}.group_by {|v| Date.strptime(v[:release], '%Y-%m').mon }.sort_by{|v| v}
+arr1.each{|k, v| puts "In #{Date::MONTHNAMES[k]} released #{v.count} movies" }
 
 puts "*" * 20
-
-movies = movies_table.map{|v| OpenStruct.new(v.to_h)}
 
 filter = movies.select {|value| value.title.include? "Time"}
 
@@ -45,7 +41,7 @@ comedy.each {|value| puts "#{value.title} released #{value.release}"}
 
 puts "*" * 20
 
-directors = movies.sort_by{|v| v.director.split(" ").last}.uniq {|v| v.director}
+directors = movies.sort_by{|v| v.director.split(" ").last}.uniq(&:director)
 directors.each {|v| puts v.director}
 
 puts "*" * 20
@@ -55,7 +51,7 @@ p movies_not_usa
 
 puts "*" * 20
 
-group_by_directors = movies.group_by{|val| val.director}
+group_by_directors = movies.group_by(&:director)
 group_by_directors.each do |k, v|
   puts "#{k} made #{v.count} movies"
 end
