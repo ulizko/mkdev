@@ -36,7 +36,7 @@ the_longest_movies.each { |value| puts "#{value.title} #{value.time}"}
 
 puts "*" * 20
 
-comedy = movies.select {|value| value.genres.include? "Comedy"}.sort_by{|value| value.release}
+comedy = movies.select {|value| value.genres.include? "Comedy"}.sort_by(&:release)
 comedy.each {|value| puts "#{value.title} released #{value.release}"}
 
 puts "*" * 20
