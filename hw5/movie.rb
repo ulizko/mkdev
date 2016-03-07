@@ -1,5 +1,5 @@
 class Movie
-  attr_reader :url, :title, :year, :country, :release, :genres, :duration, :rating, :director, :starring 
+  attr_accessor :url, :title, :year, :country, :release, :genres, :duration, :rating, :director, :starring 
   
   def initialize(filds)
     filds.each{ |k, v| instance_variable_set("@#{k}",v) }

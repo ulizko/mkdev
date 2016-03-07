@@ -1,5 +1,6 @@
 require_relative 'movie.rb'
 class MoviesList
+  include Enumerable
 
   FIELDS = [:url, :title, :year, :country, :release, :genres, :duration, :rating, :director, :starring]
   
@@ -30,8 +31,25 @@ class MoviesList
     except ? @movies_list - viewed : viewed
   end
   
-  def group_by_field(field)
-    @movies_list.group_by{ |v| v.send(field) }
+  def group_by_field(field, count = false)
+    movies = @movies_list.clone
+    if field == :starring
+      actors = movies.map {|v| v.starring = v.starring.split(",")}.flatten.uniq
+      group = movies.group_by{|v| v.title}.each{ |_, v| v.map!{ |h| h.starring}}.to_h
+      grouped = actors.reduce({}) do |hash, actor|
+        group.each do |key, val|
+          if hash[actor].nil?
+            hash.store(actor, key.split("  ")) if val.flatten.include? actor
+          else
+            hash[actor] << key if val.flatten.include? actor
+          end
+        end
+        hash
+      end
+    else
+      grouped = movies.group_by{|v| v.send(field) }.each{ |_, v| v.map!{ |h| h.title }}
+    end
+    count ? grouped.reduce({}){ |tmp, (k, v)| tmp[k] = v.size; tmp} : grouped
   end
   
   def print_movie(list)
