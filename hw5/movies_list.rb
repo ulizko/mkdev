@@ -2,7 +2,7 @@ require_relative 'movie.rb'
 class MoviesList
   include Enumerable
 
-  FIELDS = [:url, :title, :year, :country, :release, :genres, :duration, :rating, :director, :starring]
+  FIELDS = [:url, :title, :year, :country, :release, :genres, :duration, :rating, :director, :actors]
   
   def initialize(file_name)
     @movies_list = File.read(file_name).split("\n").map { |v| Movie.new(FIELDS.zip(v.split("|")).to_h) }
@@ -11,7 +11,7 @@ class MoviesList
   def sort_by_field(field, reversed = false)
     sorted = @movies_list.sort_by do |v| 
       case field
-      when :title, :country, :release, :genres, :starring
+      when :title, :country, :release, :genres, :actors
         v.send(field)
       when :year, :duration
         v.send(field).to_f
@@ -33,10 +33,10 @@ class MoviesList
   
   def group_by_field(field, count = false)
     movies = @movies_list.clone
-    if field == :starring
-      actors = movies.map {|v| v.starring = v.starring.split(",")}.flatten.uniq
-      group = movies.group_by{|v| v.title}.each{ |_, v| v.map!{ |h| h.starring}}.to_h
-      grouped = actors.reduce({}) do |hash, actor|
+    if field == :actors
+      actors_list = movies.map {|v| v.actors = v.actors.split(",")}.flatten.uniq
+      group = movies.group_by{|v| v.title}.each{ |_, v| v.map!{ |h| h.actors}}.to_h
+      grouped = actors_list.reduce({}) do |hash, actor|
         group.each do |key, val|
           if hash[actor].nil?
             hash.store(actor, key.split("  ")) if val.flatten.include? actor
@@ -50,6 +50,13 @@ class MoviesList
       grouped = movies.group_by{|v| v.send(field) }.each{ |_, v| v.map!{ |h| h.title }}
     end
     count ? grouped.reduce({}){ |tmp, (k, v)| tmp[k] = v.size; tmp} : grouped
+  end
+  
+  def count_by(field)
+    Movie.send(field).reduce({}) do |hash, k| 
+      hash[k] = Movie.send(field).count(k)
+      hash
+    end
   end
   
   def print_movie(list)
