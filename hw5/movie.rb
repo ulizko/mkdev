@@ -1,6 +1,6 @@
 require 'date'
 class Movie
-  
+ 
   MIN_RATING = 8
   @@url, @@title, @@year, @@country, @@release, @@genres, @@duration, 
   @@rating, @@director, @@actors = [], [], [], [], [], [], [], [], [], []
@@ -14,18 +14,16 @@ class Movie
                   }
   
   def initialize(fields)
-    #@duration = eval "converter('140 m') + str" , get_binding("#{converters[:duration]}")
     fields.each do |k, v| 
       instance_variable_set("@#{k}", (eval "converter(v) #{@@converters[k]}"))
       eval "@@#{k}.push self.#{k}"
     end
-    
   end
 
   def to_s
-    "%s is directed by %s in %s, played a starring %s, 
-    Genre: %s, %d minutes duration. The film premiered in %s. Rating: %s" % [title, director,
-    year, starring.join(", "), genres.join(", "), duration, release, stars(rating)]
+    "\"%s\" is directed by %s in %s, played a starring %s, 
+    Genre: %s, %d minutes duration. The film premiered in %s. Country: %s. Rating: %s" % [title, 
+    director, year, actors.join(", "), genres.join(", "), duration, release, country, stars(rating)]
   end
   
   def stars(rating)
@@ -37,20 +35,40 @@ class Movie
     self.director.split(" ").last
   end
   
-  def month_name(str)
+  def month_name
+    str = self.release
     month = Date.strptime(str, '%Y-%m-%d').mon 
     Date::MONTHNAMES[month]
   end
   
-#def get_binding(str)
-#return binding
-#end
-  private
-  
-  def method_missing(method)
-    self.send(method)
+  #def method_missing(method)
+    #self.send(method)
+  #end
+
+  def self.rating
+    @@rating
   end
-=begin
+  
+  def self.duration
+    @@duration
+  end
+  
+  def self.genres
+    @@genres
+  end
+  
+  def self.release
+    @@release
+  end
+  
+  def self.year
+    @@year
+  end
+  
+  def self.url
+    @@url
+  end
+
   def self.title
     @@title
   end
@@ -70,6 +88,7 @@ class Movie
   def self.converters
     @@converters
   end
+
   def converter(field)
     if block_given?
       yield field
@@ -77,5 +96,5 @@ class Movie
       field
     end
   end
-=end
+
 end
