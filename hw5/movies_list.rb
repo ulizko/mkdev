@@ -12,7 +12,7 @@ class MoviesList
   end
   
   def filter_by_field(field)
-    Movie.send(field).flatten.uniq
+    @movies_list.map{|v| v.send(field)}.flatten.uniq
   end
   
   def search_by_field(field, str)
@@ -21,6 +21,12 @@ class MoviesList
   
   def group_by_field(field)
     @movies_list.group_by{|v| v.send(field) }.each{ |_, v| v.map!{ |h| h.title }}
+  end
+  
+  def group_by_actor
+    @movies_list.map{|m| m.actors.map{|a| [m.title, a]} }.
+      flatten(1).group_by(&:last).
+      each{|_, v| v.map!(&:first)}
   end
   
   def exclude_by(field, str)
@@ -32,8 +38,9 @@ class MoviesList
   end
   
   def count_by_actor
-    Movie.actors.flatten.reduce({}) do |hash, k| 
-      hash[k] = Movie.actors.flatten.count(k)
+    actor_list = @movies_list.map{ |v| v.actors }.flatten 
+    actor_list.reduce({}) do |hash, k| 
+      hash[k] = actor_list.count(k)
       hash
     end
   end

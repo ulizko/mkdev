@@ -9,7 +9,6 @@ begin
   exit
 end
 
-
 list1 = movies_list.sort_by_field(:director_surname)
 movies_list.print_movie(list1)
 
@@ -35,10 +34,21 @@ list3.each{ |v| puts v}
 
 puts "*" * 20
 
-list4 = movies_list.search_by_field(:country, "USA")
+list4 = movies_list.search_by_field(:country, "Italy")
 movies_list.print_movie(list4)
 
 puts "*" * 20
 
 list8 = movies_list.exclude_by(:country, "USA")
 movies_list.print_movie(list8)
+
+puts "*" * 20
+
+list9 = movies_list.group_by_field(:director)
+list9.each{ |k, v| puts "#{k} made #{v.join(", ")}" }
+
+puts "*" * 20
+
+list10 = movies_list.group_by_actor
+list10.each{ |k, v| puts "#{k} => #{v}" } 
+
