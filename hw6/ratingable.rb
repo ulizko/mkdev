@@ -1,11 +1,5 @@
 module Ratingable
   
-
-  def value_variable_get
-    instance = self.instance_variables.first
-    self.instance_variable_get(instance)
-  end 
-  
   def probabilities (list, field)
     sum = list.map { |v| v.send(field).to_f }.uniq.reduce(:+)
     probability = 0.0
@@ -44,10 +38,6 @@ module Ratingable
       result << mov unless mov.empty? || result.include?(mov)
     end
     result
-  end
-  
-  def converter(value)
-    value.to_f
   end
   
 end

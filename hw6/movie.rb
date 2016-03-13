@@ -21,7 +21,7 @@ class Movie
   end
 
   def to_s
-    "%s\ is directed by %s in %s, played a starring %s,
+    "%s\ is directed by %s in %s, played a starring %s, 
     Genre: %s, %d minutes duration. The film premiered in %s. Country: %s. Rating: %s" % [title, 
     director, year, actors.join(", "), genres.join(", "), duration, release, country, stars(rating)]
   end
