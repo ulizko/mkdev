@@ -8,14 +8,14 @@ require_relative 'my_movies_list.rb'
 include Ratingable
 
 
-movies_list = MyMoviesList.new('movies.txt')
+m = MyMoviesList.new('movies.txt')
 
-#movies_list.value_variable_get
+watched = m.exclude_by(:time_watch, 0)
+list_on_evening = m.get_recommendation(watched, :user_rate, :time_watch)
+p "List of watched movies on evening"
+m.print_movie(list_on_evening)
 
-unwatched = movies_list.get_recommendation(:rating, :weight)
-#watched = movies_list.exclude_by(:time_watch, 0).get_recommendation(:user_rate, :time_watch)
-p "List on evening"
-movies_list.print_movie(unwatched)
-p "*********"
-p "List on evening"
-movies_list.print_movie(watched)
+unwatched = m.search_by_field(:time_watch, 0)
+list_on_evening = m.get_recommendation(unwatched, :rating, :weight)
+p "List of unwatched movies on evening"
+m.print_movie(list_on_evening)
