@@ -9,12 +9,10 @@ include Recommendation
 
 m = MyMoviesList.new('../movies.txt')
 
-unwatched = m.movies_list.select(&:unwatched?)
-list_on_evening = m.get_recommendation(unwatched)
+list_on_evening = m.get_recommendation
 p "List of unwatched movies on evening"
 m.print_movie(list_on_evening)
 
-watched = m.movies_list.reject(&:unwatched?)
-list_on_evening = m.get_recommendation_watch(watched)
+list_on_evening = m.get_recommendation_watched
 puts "List of watched movies on evening:"
 m.print_movie(list_on_evening)
