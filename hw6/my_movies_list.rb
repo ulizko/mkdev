@@ -3,10 +3,10 @@ require_relative 'classic_movie.rb'
 require_relative 'modern_movie.rb'
 require_relative 'new_movie.rb'
 require_relative 'movies_list.rb'
-require_relative 'ratingable.rb'
+require_relative 'recommendation.rb'
 
 class MyMoviesList < MoviesList
-  include Ratingable
+  include Recommendation
   
   attr_reader :movies_list
   
@@ -29,7 +29,4 @@ class MyMoviesList < MoviesList
     end
   end
   
-  def search_by_field(field, str)
-    @movies_list.select{ |v| v.send(field) == str }
-  end
 end

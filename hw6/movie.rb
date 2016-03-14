@@ -11,13 +11,12 @@ class Movie
                 }
   
   attr_accessor :url, :title, :year, :country, :release, :genres, :duration,
-                 :rating, :director, :actors, :user_rate, :time_watch 
+                 :rating, :director, :actors
 
-  def initialize(fields, user_rate, time_watch)
+  def initialize(fields)
     fields.each do |k, v| 
       instance_variable_set("@#{k}", (CONVERTERS[k].call(v)))
     end
-    @user_rate, @time_watch = user_rate, time_watch
   end
 
   def to_s

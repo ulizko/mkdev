@@ -1,13 +1,11 @@
-require_relative 'movie.rb'
-require_relative 'ratingable.rb'
+require_relative 'rateable_movie.rb'
 
-class ClassicMovie < Movie
-  include Ratingable
+class ClassicMovie < RateableMovie
   
   WEIGHT = 3
   
   def initialize(fields, user_rate = nil, time_watch = nil)
-    super(fields, user_rate, time_watch)
+    super
   end
   
   def to_s
