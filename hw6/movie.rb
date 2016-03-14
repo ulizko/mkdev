@@ -10,14 +10,14 @@ class Movie
                 release: lambda { |v| v }
                 }
   
-  attr_accessor :url, :title, :year, :country, 
-                :release, :genres, :duration, 
-                :rating, :director, :actors 
+  attr_accessor :url, :title, :year, :country, :release, :genres, :duration,
+                 :rating, :director, :actors, :user_rate, :time_watch 
 
-  def initialize(fields)
+  def initialize(fields, user_rate, time_watch)
     fields.each do |k, v| 
       instance_variable_set("@#{k}", (CONVERTERS[k].call(v)))
     end
+    @user_rate, @time_watch = user_rate, time_watch
   end
 
   def to_s

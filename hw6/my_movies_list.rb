@@ -17,14 +17,14 @@ class MyMoviesList < MoviesList
     @movies_list = movies_hash.map do |line|
       case line[:year].to_i
       when (1900...1945)
-        AncientMovie.new(line, rand(0..5))
+        AncientMovie.new(line)
       when (1945...1968)
-        ClassicMovie.new(line, rand(0..5))
+        ClassicMovie.new(line)
       when (1968...2000)
-        ModernMovie.new(line, rand(0..5))
+        ModernMovie.new(line)
       else
         r = rand(1400000000..1450000000)
-        NewMovie.new(line, rand(0..5), Time.at(r))
+        NewMovie.new(line, rand(1..5), Time.at(r))
       end
     end
   end
