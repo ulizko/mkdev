@@ -2,10 +2,11 @@ require_relative 'movie.rb'
 class MoviesList
 
   FIELDS = [:url, :title, :year, :country, :release, :genre, :duration, :rating, :director, :actors]
+  attr_reader :movies_list
   
   def initialize(file_name)
     @movies_list = File.read(file_name).split("\n").map { |v| Movie.new(FIELDS.zip(v.split("|")).to_h) }
-    @filters = Hash.new
+    @filters, @sorters = {}, {}
   end
   
   def sort_by_field(field)
@@ -54,21 +55,20 @@ class MoviesList
     if block_given?
       @movies_list.each{ |v|  puts yield v } 
     else
-      puts "Please, call method with block"
+      self.print_movie(@movies_list)
     end
   end
   
-  def sorted_by 
+  def sorted_by sorter = nil
     if block_given?
       @movies_list.sort_by{ |v|  yield v, v }
     else
-      puts "Please, call method with block"
+      @movies_list.sort_by{ |v| @sorters[sorter].call(v) }
     end
   end
   
   def add_sort_algo(fields)
-    fields =  Proc.new
-    self.sorted_by(&fields)
+    @sorters.store(fields, Proc.new)
   end
   
   def add_filter(filter)
@@ -76,17 +76,13 @@ class MoviesList
   end
   
   def filter(filter_name)
-    @movies_list.select do |movie|
-      filter_name.all? do |key, val|
-        case @filters[key].arity
-        when 3
-          @filters[key].call(movie, *val)
-        else
-          @filters[key].call(movie, val)
-        end
-      end
+    filter_name.reduce(movies_list) do |acc, (key, val)|
+      acc.keep_if { |movie| @filters[key].arity > 2 ? @filters[key]
+      .call(movie, *val) : @filters[key].call(movie, val) }
+      acc
     end
   end
+  
 end
 
 
@@ -94,12 +90,14 @@ list = MoviesList.new('../movies.txt')
 list.print { |movie| "#{movie.year}: #{movie.title}" }
 list.sorted_by { |movie| [movie.genre, movie.year] }
 list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
+list.sorted_by(:genres_years)
+
 
 list.add_filter(:duration_greater){|movie, min| movie.duration > min}
 list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
 list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-n = list.filter(
-  genres: ['Crime', 'Thriller'],
-  years: [2000, 2010],
+list.filter(
+  genres: ['Crime', 'Drama'],
+  years: [1960, 2010],
   duration_greater: 90
   )
