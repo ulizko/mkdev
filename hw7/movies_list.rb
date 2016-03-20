@@ -51,20 +51,14 @@ class MoviesList
     list.each{ |v| puts v.to_s }
   end
   
-  def print
-    if block_given?
-      @movies_list.each{ |v|  puts yield v } 
-    else
-      self.print_movie(@movies_list)
-    end
+  def print(&blk)
+    blk ||= proc { |v|  v.to_s }
+    @movies_list.each{ |v| puts blk.call(v) }
   end
   
-  def sorted_by sorter = nil
-    if block_given?
-      @movies_list.sort_by{ |v|  yield v, v }
-    else
-      @movies_list.sort_by{ |v| @sorters[sorter].call(v) }
-    end
+  def sorted_by(sorter = nil, &blk)
+    blk ||= proc { |v| @sorters[sorter].call(v) }
+    @movies_list.sort_by(&blk)
   end
   
   def add_sort_algo(fields)
