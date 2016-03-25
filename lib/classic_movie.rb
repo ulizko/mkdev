@@ -2,10 +2,7 @@ require_relative 'rateable_movie.rb'
 
 class ClassicMovie < RateableMovie
   
-  WEIGHT = 3
-  
-  def to_s
-    "%s - is classic movie, director: %s" % [title, director]
-  end
-
+  weight 1
+  print_format "%{title} - is classic movie, director: %{director}"
+  filter { (1946..1968).cover?(year) }
 end

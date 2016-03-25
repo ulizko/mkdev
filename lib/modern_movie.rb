@@ -2,10 +2,8 @@ require_relative 'rateable_movie.rb'
 
 class ModernMovie < RateableMovie
   
-  WEIGHT = 4
-  
-  def to_s
-    "%s - is modern movie, starring %s" % [title, actors.join(", ")]
-  end
+  weight 4
+  print_format "%{title} - is modern movie, starring: %{actors}"
+  filter { (1969..2000).cover?(year) }
 
 end
