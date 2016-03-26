@@ -1,7 +1,7 @@
 module Recommendation
   
   def get_recommendation(size = 5)
-    @movies_list.select(&:unwatched?).sort_by{ |v| v.rating * v.weight * rand }.last(size)
+    @movies_list.select(&:unwatched?).sort_by{ |v| v.rating * v.class::WEIGHT * rand }.last(size)
   end
   
   def get_recommendation_watched(size = 5)

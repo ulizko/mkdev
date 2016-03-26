@@ -13,13 +13,12 @@ class Movie
                 }
   
   attr_accessor :url, :title, :year, :country, :release, :genre, :duration,
-                 :rating, :director, :actors, :weight
+                 :rating, :director, :actors
   
   def initialize(fields)
     fields.each do |k, v| 
       instance_variable_set("@#{k}", (CONVERTERS[k].call(v)))
     end
-    instance_variable_set("@weight", self.class.instance_variable_get("@weight"))
   end
 
   def to_s
@@ -44,24 +43,21 @@ class Movie
   end
   
   def self.weight(weight)
-    @weight = weight
+    self.const_set("WEIGHT", weight)
   end
   
   def self.year
     @year
   end
   
-  def instance_variables_hash
-    hash_var = self.instance_variables.reduce({}) do |hash, var| 
-      hash[var[1..-1].to_sym] = instance_variable_get(var)
-      hash
-    end
+  def to_h
+    hash_var = self.instance_variables.map { |var| [var.to_s.sub('@', '').to_sym, instance_variable_get(var)] }.to_h
     hash_var[:actors] = actors.flatten.join(", ")
     hash_var
   end
   
   def self.print_format(str)
-    class_eval("def to_s; \"#{str}\" %self.instance_variables_hash; end")
+    class_eval("def to_s; \"#{str}\" %self.to_h; end")
   end
   
   def self.filter(&blk)
@@ -70,15 +66,14 @@ class Movie
   end
   
   def Movie.create(fields)
-    type_movie = @@filters.reduce([]) do |ary, (name, block)| 
-      name.instance_variable_set("@year", fields[:year].to_i)
-      ary << name if block.call
-      ary
-    end
-    type_movie.first.new(fields)
+    @@filters.each { |name, _|  name.instance_variable_set("@year", fields[:year].to_i) }
+    type_movie = @@filters.select { |name, block| block.call == true }
+    type_movie.keys.first.new(fields)
   end
   
-  def method_missing(method_name)
+  def method_missing(method_name, *args)
+    raise ArgumentError if args.size > 0
+    raise NoMethodError unless method_name =~ /[a-z]?$/
     genre.include? method_name[0..-2].capitalize
   end
   
