@@ -1,11 +1,11 @@
 module Recommendation
   
-  def get_recommendation
-    @movies_list.select(&:unwatched?).sort_by{ |v| v.rating * v.class::WEIGHT * rand }.last(5)
+  def get_recommendation(size = 5)
+    @movies_list.select(&:unwatched?).sort_by{ |v| v.rating * v.class::WEIGHT * rand }.last(size)
   end
   
-  def get_recommendation_watched
-    @movies_list.reject(&:unwatched?).sort_by{ |mov| mov.user_rate * mov.days_after_watching * 0.01 * rand }.last(5)
+  def get_recommendation_watched(size = 5)
+    @movies_list.reject(&:unwatched?).sort_by{ |mov| mov.user_rate * mov.days_after_watching * 0.01 * rand }.last(size)
   end
   
   def rate(user_rate, time_rate = Time.now)

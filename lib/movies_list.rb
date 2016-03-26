@@ -1,12 +1,16 @@
-require_relative 'movie.rb'
+require_relative 'ancient_movie.rb'
+require_relative 'classic_movie.rb'
+require_relative 'modern_movie.rb'
+require_relative 'new_movie.rb'
+require_relative 'recommendation.rb'
 class MoviesList
+  include Recommendation
 
   FIELDS = [:url, :title, :year, :country, :release, :genre, :duration, :rating, :director, :actors]
   attr_reader :movies_list
   
   def initialize(file_name)
-    @movies_list = File.read(file_name).split("\n").map { |v| Movie.new(FIELDS.zip(v.split("|")).to_h) }
-    @filters, @sorters = {}, {}
+    @movies_list = File.read(file_name).split("\n").map { |v| Movie.create(FIELDS.zip(v.split("|")).to_h) }
   end
   
   def sort_by_field(field)
@@ -62,10 +66,12 @@ class MoviesList
   end
   
   def add_sort_algo(fields)
+     @sorters ||= {}
     @sorters.store(fields, Proc.new)
   end
   
   def add_filter(filter)
+    @filters ||= {}
     @filters.store(filter, Proc.new)
   end
   
@@ -81,17 +87,22 @@ end
 
 
 list = MoviesList.new('../movies.txt')
-list.print { |movie| "#{movie.year}: #{movie.title}" }
-list.sorted_by { |movie| [movie.genre, movie.year] }
-list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
-list.sorted_by(:genres_years)
+# p list
+list_on_evening = list.get_recommendation
+p "List of unwatched movies on evening"
+list.print_movie(list_on_evening)
+p list_on_evening.select(&:action?)
+# list.print { |movie| "#{movie.year}: #{movie.title}" }
+# list.sorted_by { |movie| [movie.genre, movie.year] }
+# list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
+# list.sorted_by(:genres_years)
 
 
-list.add_filter(:duration_greater){|movie, min| movie.duration > min}
-list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
-list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-list.filter(
-  genres: ['Crime', 'Drama'],
-  years: [1960, 2010],
-  duration_greater: 90
-  )
+# list.add_filter(:duration_greater){|movie, min| movie.duration > min}
+# list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
+# list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
+# list.filter(
+#   genres: ['Crime', 'Drama'],
+#   years: [1960, 2010],
+#   duration_greater: 90
+#   )

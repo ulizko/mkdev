@@ -1,5 +1,7 @@
 require 'date'
+require_relative 'recommendation.rb'
 class Movie
+  include Recommendation
  
   MIN_RATING = 8
   CONVERTERS = {duration: lambda { |v| v.to_i }, year: lambda { |v| v.to_i }, 
@@ -12,7 +14,7 @@ class Movie
   
   attr_accessor :url, :title, :year, :country, :release, :genre, :duration,
                  :rating, :director, :actors
-
+  
   def initialize(fields)
     fields.each do |k, v| 
       instance_variable_set("@#{k}", (CONVERTERS[k].call(v)))
@@ -39,4 +41,40 @@ class Movie
     month = Date.strptime(str, '%Y-%m-%d').mon 
     Date::MONTHNAMES[month]
   end
+  
+  def self.weight(weight)
+    self.const_set("WEIGHT", weight)
+  end
+  
+  def self.year
+    @year
+  end
+  
+  def to_h
+    hash_var = self.instance_variables.map { |var| [var.to_s.sub('@', '').to_sym, instance_variable_get(var)] }.to_h
+    hash_var[:actors] = actors.flatten.join(", ")
+    hash_var
+  end
+  
+  def self.print_format(str)
+    class_eval("def to_s; \"#{str}\" %self.to_h; end")
+  end
+  
+  def self.filter(&blk)
+    @@filters ||= {}
+    @@filters[self] = blk
+  end
+  
+  def Movie.create(fields)
+    @@filters.each { |name, _|  name.instance_variable_set("@year", fields[:year].to_i) }
+    type_movie = @@filters.select { |name, block| block.call == true }
+    type_movie.keys.first.new(fields)
+  end
+  
+  def method_missing(method_name, *args)
+    raise ArgumentError if args.size > 0
+    raise NoMethodError unless method_name =~ /[a-z]?$/
+    genre.include? method_name[0..-2].capitalize
+  end
+  
 end
