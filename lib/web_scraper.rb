@@ -5,7 +5,7 @@ mechanize = Mechanize.new
 
 mechanize.history_added = Proc.new { sleep 0.5 }
 page = mechanize.get('http://www.imdb.com/chart/top')
-links = page.links_with(:href => /^\/title.+/)[6..7].delete_if { |link| link.text == " \n" }
+links = page.links_with(:href => /^\/title.+/).delete_if { |link| link.text == " \n" }
 movies = links.map do |link| 
   movie = link.click
   url = movie.uri.to_s.sub(/(?<=[?]).+(?<=[&])/, "")
