@@ -1,3 +1,4 @@
+require 'bundler/setup'
 require 'mechanize'
 require 'json'
 
@@ -6,7 +7,7 @@ mechanize = Mechanize.new
 mechanize.history_added = Proc.new { sleep 0.5 }
 page = mechanize.get('http://www.imdb.com/chart/top')
 links = page.links_with(:href => /^\/title.+/).delete_if { |link| link.text == " \n" }
-movies = links.map do |link| 
+movies = links.map do |link|
   movie = link.click
   url = movie.uri.to_s.sub(/(?<=[?]).+(?<=[&])/, "")
   title = link.to_s
@@ -14,7 +15,7 @@ movies = links.map do |link|
   country = movie.links_with(:href => /^\/country.+/)[0].text
   release = movie.css("meta[itemprop='datePublished']")[0].attributes['content'].value
   genre = movie.css("div[itemprop='genre'] a").text.strip.gsub(" ", ",")
-  duration = movie.css(".txt-block time[itemprop='duration']")[0].text
+  duration = movie.css(".subtext time[itemprop='duration']")[0].attributes["datetime"].value.slice(/\d+/) << " min"
   rating = movie.css("span[itemprop='ratingValue']").text
   director = movie.css("span[itemprop='director']").text.strip.sub(/[,()].+/, "").strip
   actors = movie.css("span[itemprop='actors']").text.split(",").map(&:strip).join(",")
