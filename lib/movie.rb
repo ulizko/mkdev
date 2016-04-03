@@ -73,7 +73,7 @@ class Movie
   
   def method_missing(method_name, *args)
     raise ArgumentError if args.size > 0
-    raise NoMethodError unless method_name =~ /[a-z]?$/
+    raise super unless method_name =~ /[a-z]?$/
     genre.include? method_name[0..-2].capitalize
   end
   

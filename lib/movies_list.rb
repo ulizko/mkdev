@@ -65,14 +65,14 @@ class MoviesList
     @movies_list.sort_by(&blk)
   end
   
-  def add_sort_algo(fields)
-     @sorters ||= {}
-    @sorters.store(fields, Proc.new)
+  def add_sort_algo(fields, &block)
+    @sorters ||= {}
+    @sorters[fields] = block
   end
   
-  def add_filter(filter)
+  def add_filter(filter, &block)
     @filters ||= {}
-    @filters.store(filter, Proc.new)
+    @filters[filter] = block
   end
   
   def filter(filter_name)
@@ -88,21 +88,21 @@ end
 
 list = MoviesList.new('../movies.txt')
 # p list
-list_on_evening = list.get_recommendation
-p "List of unwatched movies on evening"
-list.print_movie(list_on_evening)
-p list_on_evening.select(&:action?)
+# list_on_evening = list.get_recommendation
+# p "List of unwatched movies on evening"
+# list.print_movie(list_on_evening)
+# p list_on_evening.select(&:action?)
 # list.print { |movie| "#{movie.year}: #{movie.title}" }
 # list.sorted_by { |movie| [movie.genre, movie.year] }
-# list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
-# list.sorted_by(:genres_years)
+list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
+list.sorted_by(:genres_years)
 
 
-# list.add_filter(:duration_greater){|movie, min| movie.duration > min}
-# list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
-# list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-# list.filter(
-#   genres: ['Crime', 'Drama'],
-#   years: [1960, 2010],
-#   duration_greater: 90
-#   )
+list.add_filter(:duration_greater){|movie, min| movie.duration > min}
+list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
+list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
+list.filter(
+  genres: ['Crime', 'Drama'],
+  years: [1960, 2010],
+  duration_greater: 90
+  )
