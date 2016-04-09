@@ -12,10 +12,10 @@ RSpec.describe MovieDB do
       expect(movie.year).to eq(1994)
     end
     it "country" do
-      expect(movie.country).to eq("USA")
+      expect(movie.country).to eq(["United States of America"])
     end
     it "release date" do
-      expect(movie.release).to eq("1994-10-14")
+      expect(movie.release).to eq("1994-09-10")
     end
     it "genres" do
       expect(movie.genre).to eq ["Crime", "Drama"]
@@ -30,7 +30,7 @@ RSpec.describe MovieDB do
       expect(movie.director).to eq("Frank Darabont")
     end
     it "actors" do
-      expect(movie.director).to include(["Tim Robbins", "Morgan Freeman", "Bob Gunton"])
+      expect(movie.actors).to eq(["Tim Robbins", "Morgan Freeman", "Bob Gunton"])
     end
   end
 end
