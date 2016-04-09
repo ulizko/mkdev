@@ -74,12 +74,4 @@ RSpec.describe MoviesList do
     end
   end
   
-  context "sorted" do
-    context ".sorted_by" do
-      it "should " do
-        
-      end
-    end
-  end
-  
 end
