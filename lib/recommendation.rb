@@ -10,7 +10,7 @@ module Recommendation
   
   def rate(user_rate, time_rate = Time.now)
     @user_rate = user_rate
-    @time_rate = time_rate if time_rate.is_a? Time
+    @time_watch = time_rate if time_rate.is_a? Time
   end
   
   def unwatched?
