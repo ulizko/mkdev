@@ -1,76 +1,119 @@
-# require 'spec_helper.rb'
+require 'bundler/setup'
+require 'rspec/its'
 require_relative '../lib/movie.rb'
 require_relative '../lib/movies_list.rb'
 require_relative '../lib/recommendation.rb'
 
 RSpec.describe MoviesList do
-  before(:all) do
-    @list = MoviesList.new("./movies.1.txt")
-  end
   
-   it 'instance is class MoviesList' do
-    expect(@list).to be_an_instance_of MoviesList
-  end
+  subject { MoviesList.new("./movies.1.txt") }
   
-  it 'list should be contains 20 objects' do
-    expect(@list.movies_list.size).to eq 20
-  end
+  its("movies_list.size") {is_expected.to eq 20}
+  
   
   context ".sort_by_field" do
-    
     it "should be return first movie " do
-      expect(@list.sort_by_field(:duration).first).to have_attributes(:title => "12 Angry Men")
+      expect(subject.sort_by_field(:duration).first).to have_attributes(:title => "12 Angry Men")
+    end
+    
+    it "should be return subject" do
+      expect(subject.sort_by_field(:producer)).to contain_exactly(*subject.movies_list)
     end
   end
   
   context ".filter_by_field" do
-    let (:directors) { ["Frank Darabont", "Francis Ford Coppola", "Christopher Nolan", "Sidney Lumet",
+    let(:directors) { ["Frank Darabont", "Francis Ford Coppola", "Christopher Nolan", "Sidney Lumet",
                         "Steven Spielberg", "Quentin Tarantino", "Sergio Leone", "Peter Jackson",
                         "David Fincher", "Irvin Kershner", "Robert Zemeckis", "Milos Forman",
                         "John Huston", "Henri-Georges Clouzot", "Federico Fellini"
                       ] }
     it "should be return uniq directors" do
-      expect(@list.filter_by_field(:director).sort == directors.sort).to be_truthy
+      expect(subject.filter_by_field(:director)).to match_array(directors)
     end
   end
   
   context ".search_by_field" do
     it "should return movie within Knight" do
-      expect(@list.search_by_field(:title, "Knight")).to include(have_attributes(:title => "The Dark Knight"))
+      expect(subject.search_by_field(:title, "Knight").first).to have_attributes( title:  /Knight/)
     end
   end
+  
   context ".exclude_by" do
+    let(:exclud) { subject.exclude_by(:country, "USA") }
     it "should return movie without USA " do
-      expect(@list.exclude_by(:country, "USA")).not_to include(have_attributes(:country => "USA"))
+      expect(exclud).to all(have_attributes( country: /[^USA]/))
+    end
+    it "should be not empty" do
+      expect(exclud).not_to be_empty
     end
   end
+  
   context ".group_by_field" do
     it "should have keys" do
-      expect(@list.group_by_field(:country)).to include("USA", "Italy", "France", "New Zealand")
+      expect(subject.group_by_field(:country)).to include("USA", "Italy", "France", "New Zealand")
     end
     it "Italy should be size 2" do
-      expect(@list.group_by_field(:country)["Italy"].size).to eq 2
+      expect(subject.group_by_field(:country)["Italy"].size).to eq 2
     end
   end
   context ".count_by" do
     it "should return count release by month" do
-      expect(@list.count_by(:month_name)).to include "December" => 6 
+      expect(subject.count_by(:month_name)).to include "December" => 6 
     end
   end
   
   context ".get_recommendation" do
-    it "should return default size of list" do
-      expect(@list.get_recommendation.size).to eq 5
-    end
+    
+    its("get_recommendation.size") {is_expected.to eq 5}
+    
     it "should return size of list" do
-      expect(@list.get_recommendation(7).size).to eq 7
+      expect(subject.get_recommendation(7).size).to eq 7
     end
   end
   
   context ".get_recommendation_watched" do
     it "should return size of list" do
-      @list.movies_list.first.rate(5)
-      expect(@list.get_recommendation_watched.size).to eq 1
+      subject.movies_list.first.rate(5)
+      expect(subject.get_recommendation_watched.size).to eq 1
+    end
+  end
+  
+  context "print" do
+    it "should print in format present in block" do
+      string ||= []
+      subject.print { |v| string = "#{v.year}: #{v.title}" }
+      expect(string).to match(/^\d{4}: \w+/)
+    end
+    
+    it "should print in default format" do
+      result = subject.print.first
+      expect(result.to_s).to eq("The Shawshank Redemption - is modern movie, starring: Tim Robbins, Morgan Freeman, Bob Gunton")
+    end
+  end
+  
+  context "sorted_by with block" do
+    let(:sorted_list) { subject.sorted_by { |movie| [movie.genre, movie.year] } }
+    let(:sorted_algo_list) do
+      subject.add_sort_algo(:director_surname_country) { |movie| [movie.director_surname, movie.country] } 
+      subject.sorted_by(:director_surname_country)
+    end
+    it "should return sorted list" do
+      expect(sorted_list.first).to have_attributes( year: 1980, genre: ["Action", "Adventure", "Fantasy"])
+    end
+    it "should return sorted list algo genres_years" do
+      expect(sorted_algo_list.first).to have_attributes( director: "Henri-Georges Clouzot", country: "France")
+    end
+  end
+  
+  context "filter" do
+    let(:filtered_list) do
+      subject.add_filter(:released_in_month) { |movie, month| movie.month_name == "December" }
+      subject.add_filter(:actor) { |movie, actor|  movie.actors.include?(actor) }
+      subject.filter(released_in_month: "December", actor: "Al Pacino")
+    end
+    
+    it "should return filtered list" do
+      expect(filtered_list.first).to have_attributes( release: /-12-/, actors: (include("Al Pacino")))
     end
   end
   
