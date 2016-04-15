@@ -4,10 +4,14 @@ require_relative '../lib/movie_db.rb'
 
 RSpec.describe MovieDB do
   
-  let(:movie) { MovieDB.new("tt0111161") }
+  let(:movie) { MovieDB.new(278) }
   subject { movie }
   
-  its(:titles) {is_expected.to eq("The Shawshank Redemption")}
+  it 'should be Tmdb::Movie' do
+    expect(subject.instance_variable_get('@detail')).to be_a(Tmdb::Movie)
+  end
+  
+  its(:title) {is_expected.to eq("The Shawshank Redemption")}
   its(:year) {is_expected.to eq(1994)}
   its(:country) {is_expected.to eq(["United States of America"])}
   its(:release) {is_expected.to eq("1994-09-10")}
@@ -17,9 +21,9 @@ RSpec.describe MovieDB do
   its(:director) {is_expected.to eq("Frank Darabont")}
   its(:actors) {is_expected.to eq(["Tim Robbins", "Morgan Freeman", "Bob Gunton"])}
   
-  context "IMDB top-250" do
+  context "top-240" do
     subject {MovieDB.build }
     
-    its(:size) {is_expected.to eq(250)}
+    its(:size) {is_expected.to eq(240)}
   end
 end

@@ -6,15 +6,25 @@ require_relative '../lib/recommendation.rb'
 
 RSpec.describe MoviesList do
   
+  RSpec::Matchers.define :be_sorted_by do |*keys|
+    match do |array|
+      merge = array.each_with_index.reduce([]) do |ary, (val, index)|
+        ary[index] ||= []
+        keys.each { |key| ary[index].push val.send(key) } 
+        ary
+      end
+      compare = merge.each_cons(2).map { |a, b| b <=> a }
+      compare.all? { |v| v >= 0 }
+    end
+  end
+  
   subject { MoviesList.new("./movies.1.txt") }
   
   its("movies_list.size") {is_expected.to eq 20}
   
   
   context ".sort_by_field" do
-    it "should be return first movie " do
-      expect(subject.sort_by_field(:duration).first).to have_attributes(:title => "12 Angry Men")
-    end
+    it { expect(subject.sort_by_field(:duration)).to be_sorted_by(:duration) }
     
     it "should be return subject" do
       expect(subject.sort_by_field(:producer)).to contain_exactly(*subject.movies_list)
@@ -33,8 +43,8 @@ RSpec.describe MoviesList do
   end
   
   context ".search_by_field" do
-    it "should return movie within Knight" do
-      expect(subject.search_by_field(:title, "Knight").first).to have_attributes( title:  /Knight/)
+    it "should return movies within Knight" do
+      expect(subject.search_by_field(:title, "god")).to all(have_attributes( title: /god/i))
     end
   end
   
@@ -80,14 +90,11 @@ RSpec.describe MoviesList do
   
   context "print" do
     it "should print in format present in block" do
-      string ||= []
-      subject.print { |v| string = "#{v.year}: #{v.title}" }
-      expect(string).to match(/^\d{4}: \w+/)
+      expect{ subject.print { |movie| "#{movie.year}: #{movie.title}" } }.to output(/^\d{4}: \w+/).to_stdout
     end
     
     it "should print in default format" do
-      result = subject.print.first
-      expect(result.to_s).to eq("The Shawshank Redemption - is modern movie, starring: Tim Robbins, Morgan Freeman, Bob Gunton")
+      expect{ subject.print }.to output(/.+ - is [modern|new|classic|ancient]+ movie.+/).to_stdout
     end
   end
   
@@ -98,10 +105,10 @@ RSpec.describe MoviesList do
       subject.sorted_by(:director_surname_country)
     end
     it "should return sorted list" do
-      expect(sorted_list.first).to have_attributes( year: 1980, genre: ["Action", "Adventure", "Fantasy"])
+      expect(sorted_list).to be_sorted_by(:genre, :year)
     end
-    it "should return sorted list algo genres_years" do
-      expect(sorted_algo_list.first).to have_attributes( director: "Henri-Georges Clouzot", country: "France")
+    it "should return sorted list algo director_surname_country" do
+      expect(sorted_algo_list).to be_sorted_by(:director_surname, :country)
     end
   end
   

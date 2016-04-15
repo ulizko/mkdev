@@ -31,11 +31,7 @@ RSpec.describe Movie do
   its(:director) {is_expected.to eq "Francis Ford Coppola"}
   its(:director_surname) {is_expected.to eq "Coppola"}
   its(:month_name) {is_expected.to eq "December"}
-  # its("stars(rating)") {is_expected.to eq "**********"}
-  
-  it 'should presents rating as stars' do
-    expect(subject.stars(subject.rating)).to eq "**********"
-  end
+  its(:stars) {is_expected.to eq "**********"}
   
   context 'inherited classes' do
     def movie(params = {}) 
@@ -79,12 +75,13 @@ RSpec.describe Movie do
       let(:default_print) {"The Godfather: Part II is directed by Francis Ford Coppola in 1974, " \
       "played a starring Al Pacino, Robert De Niro, Robert Duvall, Genre: Crime, Drama, " \
       "202 minutes duration. The film premiered in 1974-12-20. Country: USA. Rating: **********"}
+      let(:print_movie) {"The Godfather: Part II - is modern movie, starring: Al Pacino, Robert De Niro, Robert Duvall"}
       
       it 'presents format as "The Godfather: Part II - is modern movie, starring: Al Pacino, Robert De Niro, Robert Duvall"' do
-        expect(movie.to_s).to eq "The Godfather: Part II - is modern movie, starring: Al Pacino, Robert De Niro, Robert Duvall"
+        expect{ print print_movie }.to output(movie.print_format).to_stdout
       end
-      it 'presents default' do
-        expect(subject.to_s).to eq default_print
+      it 'presents default format' do
+        expect{ print default_print }.to output(subject.print_format).to_stdout
       end
     end
   end

@@ -22,10 +22,10 @@ class Movie
   def to_s
     "%s is directed by %s in %s, played a starring %s, " \
     "Genre: %s, %d minutes duration. The film premiered in %s. Country: %s. Rating: %s" % [title, 
-    director, year, actors.join(", "), genre.join(", "), duration, release, country, stars(rating)]
+    director, year, actors.join(", "), genre.join(", "), duration, release, country, stars]
   end
   
-  def stars(rating)
+  def stars
     rating_star = ((rating - MIN_RATING)*10).to_i
     "".ljust(rating_star, "*")
   end
