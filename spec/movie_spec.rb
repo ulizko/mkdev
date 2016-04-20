@@ -63,7 +63,7 @@ RSpec.describe Movie do
         expect(movie_rated.time_watch).to be_nil
       end
       
-      context ".rate" do
+      context "#rate" do
         it "should set user rating" do
           movie_rated.rate(3)
           expect(movie_rated.user_rate).to eq 3
@@ -71,7 +71,7 @@ RSpec.describe Movie do
       end
     end
     
-    describe "#print_format" do
+    describe ".print_format" do
       let(:default_print) {"The Godfather: Part II is directed by Francis Ford Coppola in 1974, " \
       "played a starring Al Pacino, Robert De Niro, Robert Duvall, Genre: Crime, Drama, " \
       "202 minutes duration. The film premiered in 1974-12-20. Country: USA. Rating: **********"}

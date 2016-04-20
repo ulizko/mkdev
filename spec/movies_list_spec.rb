@@ -6,24 +6,12 @@ require_relative '../lib/recommendation.rb'
 
 RSpec.describe MoviesList do
   
-  RSpec::Matchers.define :be_sorted_by do |*keys|
-    match do |array|
-      merge = array.each_with_index.reduce([]) do |ary, (val, index)|
-        ary[index] ||= []
-        keys.each { |key| ary[index].push val.send(key) } 
-        ary
-      end
-      compare = merge.each_cons(2).map { |a, b| b <=> a }
-      compare.all? { |v| v >= 0 }
-    end
-  end
-  
   subject { MoviesList.new("./movies.1.txt") }
   
   its("movies_list.size") {is_expected.to eq 20}
   
   
-  context ".sort_by_field" do
+  context "#sort_by_field" do
     it { expect(subject.sort_by_field(:duration)).to be_sorted_by(:duration) }
     
     it "should be return subject" do
@@ -31,7 +19,7 @@ RSpec.describe MoviesList do
     end
   end
   
-  context ".filter_by_field" do
+  context "#filter_by_field" do
     let(:directors) { ["Frank Darabont", "Francis Ford Coppola", "Christopher Nolan", "Sidney Lumet",
                         "Steven Spielberg", "Quentin Tarantino", "Sergio Leone", "Peter Jackson",
                         "David Fincher", "Irvin Kershner", "Robert Zemeckis", "Milos Forman",
@@ -42,13 +30,13 @@ RSpec.describe MoviesList do
     end
   end
   
-  context ".search_by_field" do
+  context "#search_by_field" do
     it "should return movies within Knight" do
       expect(subject.search_by_field(:title, "god")).to all(have_attributes( title: /god/i))
     end
   end
   
-  context ".exclude_by" do
+  context "#exclude_by" do
     let(:exclud) { subject.exclude_by(:country, "USA") }
     it "should return movie without USA " do
       expect(exclud).to all(have_attributes( country: /[^USA]/))
@@ -58,7 +46,7 @@ RSpec.describe MoviesList do
     end
   end
   
-  context ".group_by_field" do
+  context "#group_by_field" do
     it "should have keys" do
       expect(subject.group_by_field(:country)).to include("USA", "Italy", "France", "New Zealand")
     end
@@ -66,13 +54,13 @@ RSpec.describe MoviesList do
       expect(subject.group_by_field(:country)["Italy"].size).to eq 2
     end
   end
-  context ".count_by" do
+  context "#count_by" do
     it "should return count release by month" do
       expect(subject.count_by(:month_name)).to include "December" => 6 
     end
   end
   
-  context ".get_recommendation" do
+  context "#get_recommendation" do
     
     its("get_recommendation.size") {is_expected.to eq 5}
     
@@ -81,14 +69,14 @@ RSpec.describe MoviesList do
     end
   end
   
-  context ".get_recommendation_watched" do
+  context "#get_recommendation_watched" do
     it "should return size of list" do
       subject.movies_list.first.rate(5)
       expect(subject.get_recommendation_watched.size).to eq 1
     end
   end
   
-  context "print" do
+  context "#print" do
     it "should print in format present in block" do
       expect{ subject.print { |movie| "#{movie.year}: #{movie.title}" } }.to output(/^\d{4}: \w+/).to_stdout
     end
@@ -98,7 +86,7 @@ RSpec.describe MoviesList do
     end
   end
   
-  context "sorted_by with block" do
+  context "#sorted_by" do
     let(:sorted_list) { subject.sorted_by { |movie| [movie.genre, movie.year] } }
     let(:sorted_algo_list) do
       subject.add_sort_algo(:director_surname_country) { |movie| [movie.director_surname, movie.country] } 
@@ -112,7 +100,7 @@ RSpec.describe MoviesList do
     end
   end
   
-  context "filter" do
+  context "#filter" do
     let(:filtered_list) do
       subject.add_filter(:released_in_month) { |movie, month| movie.month_name == "December" }
       subject.add_filter(:actor) { |movie, actor|  movie.actors.include?(actor) }

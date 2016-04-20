@@ -59,7 +59,7 @@ class MovieDB
   end
   
   def director
-    Tmdb::Movie.director(id).first.name
+    Tmdb::Movie.director(id).map { |v| v["name"] }.first
   end
   
   def actors
