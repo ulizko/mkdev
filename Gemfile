@@ -7,5 +7,7 @@ group :test do
   gem 'rspec'
   gem 'rspec-its'
   gem "factory_girl", "~> 4.0"
+  gem 'webmock'
+  gem 'vcr'
 end
   

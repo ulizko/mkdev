@@ -43,11 +43,11 @@ class MovieDB
   end
   
   def country
-    detail.production_countries.map { |v| v["name"] }
+    detail.production_countries.map(&:name)
   end
   
   def genre
-    detail.genres.map { |v| v["name"] }.sort
+    detail.genres.map(&:name).sort
   end
   
   def duration
@@ -59,11 +59,11 @@ class MovieDB
   end
   
   def director
-    Tmdb::Movie.director(id).map { |v| v["name"] }.first
+    Tmdb::Movie.director(id).map(&:name).first
   end
   
   def actors
-    Tmdb::Movie.cast(id).map { |v| v["name"] }.first(3)
+    Tmdb::Movie.cast(id).map(&:name).first(3)
   end
   
   def id
