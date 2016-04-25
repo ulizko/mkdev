@@ -4,12 +4,10 @@ class Movie
   include Recommendation
  
   MIN_RATING = 8
-  CONVERTERS = {duration: lambda { |v| v.to_i }, year: lambda { |v| v.to_i }, 
-                genre: lambda { |v| v.split(",") }, director: lambda { |v| v },
-                rating: lambda { |v| v.to_f }, url: lambda { |v| v },
-                title: lambda { |v| v }, country: lambda { |v| v },
-                actors: lambda { |v| v.split(",").combination(1).to_a },
-                release: lambda { |v| v }
+  CONVERTERS = {duration: :to_i.to_proc, year: :to_i.to_proc, 
+                genre: lambda { |v| v.split(",") }, 
+                rating: :to_f.to_proc,
+                actors: lambda { |v| v.split(",") }
                 }
   
   attr_accessor :url, :title, :year, :country, :release, :genre, :duration,
@@ -17,17 +15,17 @@ class Movie
   
   def initialize(fields)
     fields.each do |k, v| 
-      instance_variable_set("@#{k}", (CONVERTERS[k].call(v)))
+      instance_variable_set("@#{k}", (CONVERTERS[k].nil? ? v : CONVERTERS[k].call(v)))
     end
   end
 
   def to_s
-    "%s is directed by %s in %s, played a starring %s, 
-    Genre: %s, %d minutes duration. The film premiered in %s. Country: %s. Rating: %s" % [title, 
-    director, year, actors.join(", "), genre.join(", "), duration, release, country, stars(rating)]
+    "%s is directed by %s in %s, played a starring %s, " \
+    "Genre: %s, %d minutes duration. The film premiered in %s. Country: %s. Rating: %s" % [title, 
+    director, year, actors.join(", "), genre.join(", "), duration, release, country, stars]
   end
   
-  def stars(rating)
+  def stars
     rating_star = ((rating - MIN_RATING)*10).to_i
     "".ljust(rating_star, "*")
   end

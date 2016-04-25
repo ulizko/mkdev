@@ -1,0 +1,80 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://api.themoviedb.org/3/movie/278?api_key=49f9fa36e35148764b75d87d4a894fa2
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Content-Type:
+      - application/json; charset=utf-8
+      User-Agent:
+      - Ruby
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Access-Control-Allow-Origin:
+      - "*"
+      Cache-Control:
+      - public, max-age=28800
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=utf-8
+      Date:
+      - Sun, 24 Apr 2016 19:10:07 GMT
+      Etag:
+      - W/"439852c0a45a5941037c747849c1785e"
+      Server:
+      - openresty
+      Status:
+      - 200 OK
+      Vary:
+      - Accept-Encoding
+      X-Memc:
+      - HIT
+      X-Memc-Age:
+      - '20034'
+      X-Memc-Expires:
+      - '8766'
+      X-Memc-Key:
+      - de749227bec358aea949038123813430
+      X-Ratelimit-Limit:
+      - '40'
+      X-Ratelimit-Remaining:
+      - '25'
+      X-Ratelimit-Reset:
+      - '1461525012'
+      Content-Length:
+      - '718'
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        H4sIAAAAAAAAA41UTXPaMBD9KxqdDcWYAOYW8tU0nXaaNL10Oh5hLbaKvHL1
+        ASWZ/PeuBCHtrb5g7z69fbv7xDMXMmjPF2uhHWR8JeqNtKaveuFbvuDvfi/v
+        bj58cee3sANwy1l5dzEvr/ul/WaHP/uG0xHQBhtXeVPVRmuovTLIFxi0pmSQ
+        DRD9+GyUnow3gBYcX3x/5kryRT7POIoOqNalFZ3gL9khMR+dEhdW0e/Lj4y3
+        poNeNDFIlSNsPCMC1clVFb+496OcnmlOaWNVo1DoSgtswuEU4N8Jr7yO0a8t
+        sIdW7FwrcMPuQULXpy4IuwW7VbAj1DXpA8kUMk/4vJyMHFsbm76kCSsNrAtW
+        gmVmzVrl2E6tgQmUrKWYjkwZC73zFFLYsBUVo8Q5yj27DGuaCgJbAUlzTDCE
+        HdOJwKcKb/p6q5zBjO2IFoib9cG7VFDUtQnoI7nbKK0d84btjN0knQKZ6IwV
+        mu0EycQhVbURG4/GHTLnLfi6jS2+FjkJq2n0iW9FkmSnLI1itU/SjI8NKuyE
+        J8hgQK+1DqlHqml0HMmBj17iTmWccQRGWbG6Qg+NVX6fxhXwVwCsWxFH6gAd
+        pImaHoa0kd70QYsI5otieDYuJvOzGHUe7Mm25edZ8/Gps/A4wpvN7XJ6Vyzd
+        h9XT9tP2aNveGhmSV8m2XS9QHV35ajrhyBzs3tQbdkXyrBfUIaA/Gq+cRUP+
+        w0Kjt68s1G1V5NNplRPX4wM/mfkRlafmH3waFvV13oFVtUj+tqBBOKgkJQmb
+        l+VkMCoH+YjH3BYwUHg8Lyb5ZFpSKC47suaTccZdbzaAJ7e/6ZgWZZKRzH+U
+        cYWNVq5NVcmRPhCc3x/KS4J5QXmMyGsQltW0yJY2yfYmnHY5ZO9pJynnwKcU
+        mSUt6T9u1lZJMKc/nq3xUAm6IumezofFMZSmyheTWTF9+QNyPLVvrQQAAA==
+    http_version: 
+  recorded_at: Sun, 24 Apr 2016 19:10:08 GMT
+recorded_with: VCR 3.0.1

@@ -22,7 +22,7 @@ class MoviesList
   end
   
   def search_by_field(field, str)
-    @movies_list.select{ |v| v.send(field).include? str }
+    @movies_list.select{ |v| v.send(field).downcase.include? str.downcase }
   end
   
   def group_by_field(field)
@@ -86,23 +86,23 @@ class MoviesList
 end
 
 
-list = MoviesList.new('../movies.txt')
+# list = MoviesList.new('../movies.1.txt')
 # p list
 # list_on_evening = list.get_recommendation
 # p "List of unwatched movies on evening"
 # list.print_movie(list_on_evening)
 # p list_on_evening.select(&:action?)
 # list.print { |movie| "#{movie.year}: #{movie.title}" }
-# list.sorted_by { |movie| [movie.genre, movie.year] }
-list.add_sort_algo(:genres_years) { |movie| [movie.genre, movie.year] }
-list.sorted_by(:genres_years)
+# p list.sorted_by { |movie| [movie.genre, movie.year] }
+# list.add_sort_algo(:director_surname_country) { |movie| [movie.director_surname, movie.country] }
+# p list.sorted_by(:director_surname_country)
 
 
-list.add_filter(:duration_greater){|movie, min| movie.duration > min}
-list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
-list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
-list.filter(
-  genres: ['Crime', 'Drama'],
-  years: [1960, 2010],
-  duration_greater: 90
-  )
+# list.add_filter(:duration_greater){|movie, min| movie.duration > min}
+# list.add_filter(:genres){|movie, *genres| genres.include?(movie.genre)}
+# list.add_filter(:years){|movie, from, to| (from..to).include?(movie.year)}
+# list.filter(
+#   genres: ['Crime', 'Drama'],
+#   years: [1960, 2010],
+#   duration_greater: 90
+#   )
